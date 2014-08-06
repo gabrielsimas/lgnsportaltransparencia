@@ -3,7 +3,10 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Formatting;
+using Projeto.Integracao.Dto.Dto;
 namespace Tdd.Projeto
 {
     /// <summary>
@@ -12,9 +15,12 @@ namespace Tdd.Projeto
     [TestClass]
     public class TesteREST
     {
+
+        private const String TOKEN = "mvc2E9G3SKyb";
+
         public TesteREST()
         {
-            
+               
         }
 
         private TestContext testContextInstance;
@@ -58,8 +64,30 @@ namespace Tdd.Projeto
         #endregion
 
         [TestMethod]
-        public void TestMethod1()
+        public void ConsumoInicial()
         {
+            String estado = "sp";
+            String cargo = "3";
+
+            //Classe de suporte a consumo de HTTP namespace System.Net.Http
+            
+            HttpClient client = new HttpClient();
+            //Adicionando no Header o token e o media type JSON
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Add("App-Token", TOKEN);
+            //Fazendo a requisição
+            HttpResponseMessage response = client.GetAsync("http://api.transparencia.org.br/api/v1/candidatos?estado=sp&cargo=3").Result;
+
+            //Conferindo código 200 de sucesso
+            if (response.IsSuccessStatusCode)
+            {
+                //Parse de JSON para o objeto Candidato
+                //var listaDeCandidatos = response.Content.ReadAsAsync<IList<Candidato>>().Result;
+                var listaDeCandidatos = response.Content.ReadAsAsync<IList<CandidatoDto>>().Result;
+            }
+            else
+                //Exibindo a exceção com o código Http respectivo.
+                throw new Exception(string.Concat(response.StatusCode.ToString(), " - ", response.ReasonPhrase));
             
         }
     }
