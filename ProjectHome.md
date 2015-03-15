@@ -1,0 +1,1 @@
+Projeto que cria uma implementação dos serviços do Portal da Transparência, utilizado Dtos, Filtros e Enums
